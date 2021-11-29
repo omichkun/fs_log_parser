@@ -1,6 +1,7 @@
+require_relative 'lib/fs_log_parser/version'
 Gem::Specification.new do |s|
   s.name        = 'fs_log_parser'
-  s.version     = '0.0.1'
+  s.version     = FsLogParser::VERSION
   s.summary     = "Freeswitch log parser"
   s.description = "Simple log parser for Freeswitch"
   s.authors     = ["Omich Kun"]
