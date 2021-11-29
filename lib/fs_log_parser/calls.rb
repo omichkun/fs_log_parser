@@ -1,6 +1,7 @@
 module FsLogParser
   class Calls
     @@calls = []
+    @@processing_calls = []
 
     def initialize
       @@calls = []
@@ -8,6 +9,7 @@ module FsLogParser
 
     def <<(call)
       @@calls << call
+      @@processing_calls << call
     end
 
     def self.all
@@ -20,6 +22,14 @@ module FsLogParser
     
     def self.find(uuid)
       @@calls.find {|c| c.params[:uuid] == uuid}
+    end
+
+    def self.find_in_processing(uuid)
+      @@processing_calls.find {|c| c.params[:uuid] == uuid}
+    end
+
+    def finish(call)
+      @@processing_calls.delete(call)
     end
   end
 end

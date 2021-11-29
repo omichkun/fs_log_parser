@@ -10,7 +10,7 @@ module FsLogParser
         begin
           parse(line)
         rescue => e
-          puts "#{e.message} : #{line}"
+          # puts "#{e.message} : #{line}"
         end
       end
     end
@@ -18,7 +18,7 @@ module FsLogParser
     def parse(line)
       line = line.encode("UTF-8", invalid: :replace, replace: "")
       line_uuid = get_line_uuid(line)
-      call = Calls.find(line_uuid)
+      call = Calls.find_in_processing(line_uuid)
   
       if line =~ /New\sChannel/
         start_time = Time.parse(parse_time(line))
@@ -26,9 +26,11 @@ module FsLogParser
         call = Call.new(line: line, start_time: start_time, uuid: call_uuid)
         call.lines << line
         @calls << call
-      elsif line =~ /Dialplan.+Absolute\sCondition/
-        route = get_route(line)
-        call.params[:resulting_route] = route
+      elsif line =~ /State\sDESTROY\sgoing\sto\ssleep/
+        end_time = Time.parse(parse_time(line))
+        call.params[:end_time] = end_time
+        call.lines << line
+        @calls.finish(call)
       else
         return if call.nil?
   
